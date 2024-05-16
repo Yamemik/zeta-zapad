@@ -38,7 +38,8 @@ def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     summary="Получить пользователя по id",
 )
 def read_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = users_service.get_user(db, user_id=user_id)
+    db_user = users_service.get_user_by_id(db, user_id=user_id)
+    print(db_user)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user

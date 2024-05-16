@@ -1,11 +1,12 @@
+from datetime import datetime
 from pydantic import ConfigDict, BaseModel, Field, EmailStr
 
 from ..schemas.carts_schema import CartSchema
 
 
 class UserCreateSchema(BaseModel):
-    email: EmailStr | None = Field(default=None)
-    telephone: str | None = Field(default=None)
+    email: str = Field()
+    telephone: str = Field()
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -37,9 +38,9 @@ class UserUpdateSchema(UserCreateSchema):
 
 class UserSchema(UserUpdateSchema):
     id: int = Field(...)
-    created_at: str = Field(...)
+    created_at: datetime = Field(...)
 
-    carts: list[CartSchema] = []
+    # carts: list[CartSchema] = []
 
     model_config = ConfigDict(
         populate_by_name=True,

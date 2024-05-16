@@ -11,10 +11,10 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     created_at = Column(DateTime, default=datetime.utcnow)
-    name = Column(String, nullable=True)
-    second_name = Column(String, nullable=True)
+    name = Column(String, nullable=True, default="")
+    second_name = Column(String, nullable=True, default="")
     telephone = Column(String, unique=True, index=True)
-    email = Column(String, unique=True, index=True)
+    email = Column(String, index=True)
     password = Column(String)
 
     carts = relationship("Cart", back_populates="user")

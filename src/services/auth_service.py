@@ -8,7 +8,8 @@ from pydantic import BaseModel
 
 from sqlalchemy.orm import Session
 
-from ..services.users_service import get_user_by_email, get_user_by_telephone, create_user
+from ..services.users_service import (get_user_by_email, get_user_by_telephone, create_user, get_user_by_id,
+                                      update_code_user)
 from ..services.email_service import send_email
 
 SECRET_KEY = "asf5hjjiqvbkpa56"
@@ -23,32 +24,38 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token")
 class Token(BaseModel):
     access_token: str
     token_type: str
-    user: dict
 
 
-def authenticate_user(db: Session, email: str | None, telephone: str | None):
-    if email is None:
+def authenticate_user(db: Session, email: str, telephone: str):
+    if email == "":
         user = get_user_by_telephone(db, telephone)
         if not user:
-            user = create_user(db, "", telephone)
+            user = create_user(db, telephone, telephone)
             # send_sms()
         else:
-            ...
-            # user = update_user()
+            update_code_user(db, user.id)
             # send_sms()
     else:
         user = get_user_by_email(db, email)
         if not user:
-            user = create_user(db, email, "")
+            user = create_user(db, email, email)
             send_email(user.password, email)
         else:
-            # user = update_user()
+            update_code_user(db, user.id)
             send_email(user.password, email)
     return user
 
 
-def verify_password(plain_password, hashed_password):
-    return plain_password == hashed_password
+def verify_code(email: str, telephone: str, code: str, db: Session):
+    if email != "":
+        user_db = get_user_by_email(db, email)
+    else:
+        user_db = get_user_by_telephone(db, telephone)
+
+    if user_db and user_db.password == code:
+        return create_token(user_db.id)
+    else:
+        return None
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
@@ -81,12 +88,12 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
-        if email is None:
+        id: int = payload.get("sub")
+        if id is None:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-    user = get_user_by_email_all(email)
+    user = get_user_by_id(id)
     if user is None:
         raise credentials_exception
     return user
@@ -98,14 +105,3 @@ async def get_current_active_user(
     if current_user["role"] is None:
         raise HTTPException(status_code=400, detail="Не авторизован")
     return current_user
-
-
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt

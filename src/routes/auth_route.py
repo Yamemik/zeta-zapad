@@ -6,8 +6,8 @@ from sqlalchemy.orm import Session
 from ..common.database import SessionLocal, engine
 from ..models import users_entity
 from ..schemas.users_schema import UserCreateSchema
-from ..services.auth_service import authenticate_user, create_token
-from ..services.users_service import get_user_by_telephone, get_user_by_email
+from ..services.auth_service import authenticate_user, verify_code
+
 
 users_entity.Base.metadata.create_all(bind=engine)
 
@@ -41,15 +41,15 @@ async def login_for_access_token(user: UserCreateSchema, db: Session = Depends(g
     return {"message": "Код отправлен!"}
 
 
-@auth_router.post("/verify_code")
-def verify_code(email: str | None, telephone: str | None, code: str,  db: Session = Depends(get_db)):
-    if email is None:
-        user_db = get_user_by_telephone(db, telephone)
-    else:
-        user_db = get_user_by_email(db, email)
+@auth_router.post(
+    "/verify_code",
+    summary="Проверка кода",
+    status_code=status.HTTP_202_ACCEPTED,
+)
+def verify(user: UserCreateSchema, code: str,  db: Session = Depends(get_db)):
+    token = verify_code(user.email, user.telephone, code, db)
 
-    if not user_db and user_db.password == code:
-        token = create_token(user_db.id)
+    if token is not None:
         return {
             "token": token,
             "message": "Авторизация успешна!"
