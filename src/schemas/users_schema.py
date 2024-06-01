@@ -1,7 +1,5 @@
 from datetime import datetime
-from pydantic import ConfigDict, BaseModel, Field, EmailStr
-
-from ..schemas.carts_schema import CartSchema
+from pydantic import ConfigDict, BaseModel, Field
 
 
 class UserCreateSchema(BaseModel):
