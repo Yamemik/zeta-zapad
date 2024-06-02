@@ -1,5 +1,9 @@
 from datetime import datetime
+from typing import Union
+
 from pydantic import ConfigDict, BaseModel, Field
+
+from ..schemas.roles_schemas import RoleSchema
 
 
 class UserCreateSchema(BaseModel):
@@ -37,6 +41,8 @@ class UserUpdateSchema(UserCreateSchema):
 class UserSchema(UserUpdateSchema):
     id: int = Field(...)
     created_at: datetime = Field(...)
+
+    role: Union[RoleSchema, None] = Field(...)
 
     # carts: list[CartSchema] = []
 

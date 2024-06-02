@@ -2,6 +2,8 @@ from random import randint
 
 from sqlalchemy.orm import Session
 
+from ..services.roles_service import get_role_by_code
+
 from ..models.users_entity import User
 from ..schemas.users_schema import UserUpdateSchema
 
@@ -24,8 +26,14 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 
 def create_user(db: Session, email: str, telephone: str):
     verification_code = str(randint(1000, 9999))
+    role = get_role_by_code(db, "user")
 
-    db_user = User(email=email, telephone=telephone, password=verification_code)
+    db_user = User(
+        email=email,
+        telephone=telephone,
+        password=verification_code,
+        role_id=role.id,
+    )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -55,3 +63,17 @@ def update_code_user(db: Session, user_id):
     db.refresh(user_db)
     return user_db
 
+
+def create_owner(db: Session, role_id: int, email: str, telephone: str):
+    user = db.query(User).filter(User.role_id == role_id).first()
+    if user is None:
+        verification_code = str(randint(1000, 9999))
+        user = User(
+            email=email,
+            telephone=telephone,
+            password=verification_code,
+            role_id=role_id)
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    return user

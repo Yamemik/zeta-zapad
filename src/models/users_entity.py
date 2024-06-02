@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 
 from ..common.database import Base
@@ -14,7 +14,10 @@ class User(Base):
     name = Column(String, nullable=True, default="")
     second_name = Column(String, nullable=True, default="")
     telephone = Column(String, unique=True, index=True)
+    role_id = Column(Integer, ForeignKey("roles.id"))
     email = Column(String, index=True)
     password = Column(String)
+
+    role = relationship("Role", back_populates="users")
 
     carts = relationship("Cart", back_populates="user")

@@ -2,9 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.common.settings import settings
+
+from src.routes.settings_route import settings_router
 from src.routes.auth_route import auth_router
 from src.routes.users_route import users_router
 from src.routes.carts_route import carts_router
+from src.routes.roles_route import roles_router
 
 
 def create_app():
@@ -17,7 +20,7 @@ def create_app():
     origins = [
         "http://localhost.tiangolo.com",
         "https://localhost.tiangolo.com",
-        "http://localhost",
+        "http://localhost:8000",
         "http://localhost:8080",
     ]
 
@@ -29,9 +32,11 @@ def create_app():
         allow_headers=["*"],
     )
 
+    app.include_router(settings_router)
     app.include_router(auth_router)
     app.include_router(users_router)
     app.include_router(carts_router)
+    app.include_router(roles_router)
 
     return app
 
