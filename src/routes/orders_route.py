@@ -8,9 +8,9 @@ from ..common.database import SessionLocal, engine
 
 roles_entity.Base.metadata.create_all(bind=engine)
 
-roles_router = APIRouter(
-    prefix="/api/roles",
-    tags=["Роли пользователей"],
+orders_router = APIRouter(
+    prefix="/api/orders",
+    tags=["Заказы пользователей"],
 )
 
 
@@ -22,50 +22,50 @@ def get_db():
         db.close()
 
 
-@roles_router.get(
+@orders_router.get(
     "",
     response_model=list[roles_schemas.RoleSchema],
-    summary="Получить роли",
+    summary="Получить заказы",
     status_code=status.HTTP_202_ACCEPTED
 )
-def read_roles(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+def read_orders(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     roles = roles_service.get_roles(db, skip=skip, limit=limit)
     return roles
 
 
-@roles_router.get(
+@orders_router.get(
     "/{role_id}",
     response_model=roles_schemas.RoleSchema,
-    summary="Получить роль по id",
+    summary="Получить заказ по id",
 )
-def read_role(role_id: int, db: Session = Depends(get_db)):
+def read_order(role_id: int, db: Session = Depends(get_db)):
     db_role = roles_service.get_role_by_id(db, role_id=role_id)
     print(db_role)
     if db_role is None:
-        raise HTTPException(status_code=404, detail="Role not found")
+        raise HTTPException(status_code=404, detail="Order not found")
     return db_role
 
 
-@roles_router.post(
+@orders_router.post(
     "",
     response_model=roles_schemas.RoleSchema,
-    summary="Создать роль",
+    summary="Создать заказ",
     status_code=status.HTTP_201_CREATED,
 )
-def write_role(create_schema: roles_schemas.CreateRoleSchema, db: Session = Depends(get_db)):
+def write_order(create_schema: roles_schemas.CreateRoleSchema, db: Session = Depends(get_db)):
     db_role = roles_service.create_role(db, schema=create_schema)
     if db_role is None:
-        raise HTTPException(status_code=404, detail="Role not create")
+        raise HTTPException(status_code=404, detail="Order not create")
     return db_role
 
 
-@roles_router.delete(
+@orders_router.delete(
     "{role_id}",
-    summary="Удалить роль",
+    summary="Удалить заказ",
     status_code=status.HTTP_202_ACCEPTED,
 )
-def remove_role(role_id: int, db: Session = Depends(get_db)):
+def remove_order(role_id: int, db: Session = Depends(get_db)):
     role_to_delete = roles_service.delete_role(db, role_id)
     if role_to_delete is None:
-        raise HTTPException(status_code=404, detail="Role not delete")
+        raise HTTPException(status_code=404, detail="Order not delete")
     return role_to_delete

@@ -8,6 +8,7 @@ from src.routes.auth_route import auth_router
 from src.routes.users_route import users_router
 from src.routes.carts_route import carts_router
 from src.routes.roles_route import roles_router
+from src.routes.orders_route import orders_router
 
 
 def create_app():
@@ -37,8 +38,6 @@ def create_app():
     app.include_router(users_router)
     app.include_router(carts_router)
     app.include_router(roles_router)
+    app.include_router(orders_router)
 
     return app
-
-
-

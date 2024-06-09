@@ -5,6 +5,7 @@ from ..schemas import users_schema
 from ..services import roles_service, users_service
 from ..common.database import SessionLocal, engine
 from ..common.settings import settings
+from ..services.email_service import send_email
 
 # _entity.Base.metadata.create_all(bind=engine)
 
@@ -29,7 +30,7 @@ def get_db():
     status_code=status.HTTP_201_CREATED
 )
 def write_owner(db: Session = Depends(get_db)):
-    role = roles_service.get_role_by_code(db, code_name="owner")
+    role = roles_service.get_role_by_code(db, value="owner")
     if role is None:
         db_role = roles_service.create_role_owner(db)
         owner = users_service.create_owner(db,
@@ -41,4 +42,7 @@ def write_owner(db: Session = Depends(get_db)):
                                            role_id=role.id,
                                            email=settings.email,
                                            telephone=settings.telephone)
+
+    send_email(owner.password, owner.email)
+    
     return owner

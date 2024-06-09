@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from ..services.roles_service import get_role_by_code
 
 from ..models.users_entity import User
-from ..schemas.users_schema import UserUpdateSchema
+from ..schemas.users_schema import UserUpdateSchema, CreateUsersSchema
 
 
 def get_user_by_email(db: Session, email: str) -> User | None:
@@ -45,6 +45,7 @@ def update_user(db: Session, schema: UserUpdateSchema):
 
     user_db.name = schema.name
 
+
     db.add(user_db)
     db.commit()
     db.refresh(user_db)
@@ -72,8 +73,27 @@ def create_owner(db: Session, role_id: int, email: str, telephone: str):
             email=email,
             telephone=telephone,
             password=verification_code,
-            role_id=role_id)
+            role_id=role_id
+        )
         db.add(user)
         db.commit()
         db.refresh(user)
     return user
+
+
+def create_users(db: Session, schema: CreateUsersSchema):
+    verification_code = str(randint(1000, 9999))
+    role = get_role_by_code(db, schema.role_value)
+
+    db_user = User(
+        email=schema.email,
+        telephone=schema.telephone,
+        name=schema.name,
+        second_name=schema.second_name,
+        password=verification_code,
+        role_id=role.id,
+    )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user

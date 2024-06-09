@@ -14,7 +14,7 @@ def get_roles(db: Session, skip: int = 0, limit: int = 10) -> list | None:
 
 
 def create_role(db: Session, schema: CreateRoleSchema):
-    db_role = Role(title=schema.title, code_name=schema.code_name)
+    db_role = Role(title=schema.title, value=schema.value)
     db.add(db_role)
     db.commit()
     db.refresh(db_role)
@@ -22,15 +22,15 @@ def create_role(db: Session, schema: CreateRoleSchema):
 
 
 def create_role_owner(db: Session):
-    db_role = Role(title="Владелец", code_name="owner")
+    db_role = Role(title="Владелец", value="owner")
     db.add(db_role)
     db.commit()
     db.refresh(db_role)
     return db_role
 
 
-def get_role_by_code(db: Session, code_name: str):
-    db_role = db.query(Role).filter(Role.code_name == code_name).first()
+def get_role_by_code(db: Session, value: str):
+    db_role = db.query(Role).filter(Role.value == value).first()
     return db_role
 
 

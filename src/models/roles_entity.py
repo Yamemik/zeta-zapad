@@ -9,6 +9,6 @@ class Role(Base):
 
     id = Column(Integer, primary_key=True)
     title = Column(String)
-    code_name = Column(String)
+    value = Column(String, unique=True)
 
     users = relationship("User", back_populates="role")

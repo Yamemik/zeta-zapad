@@ -55,3 +55,25 @@ class UserSchema(UserUpdateSchema):
             }
         },
     )
+
+
+class CreateUsersSchema(BaseModel):
+    email: str = Field(...)
+    telephone: str = Field(...)
+    name: str = Field(...)
+    second_name: str = Field(...)
+    role_value: str = Field(...)
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        json_schema_extra={
+            "example": {
+                "email": "kuancarlos@yandex.ru",
+                "telephone": "+79993335577",
+                "name": "Олег",
+                "second_name": "Иванов",
+                "role": "admin or manager"
+            }
+        },
+    )
