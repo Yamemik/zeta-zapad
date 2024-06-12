@@ -11,6 +11,6 @@ class Cart(Base):
     quantity = Column(Integer, default=0)
     price = Column(Float, default=0)
 
-    user_id = Column(Integer, ForeignKey("users.id"))
+    order_id = Column(Integer, ForeignKey("order.id"))
 
-    user = relationship("User", back_populates="carts")
+    order = relationship("Order", back_populates="carts")
