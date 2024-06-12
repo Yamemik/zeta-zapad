@@ -1,7 +1,7 @@
 version: '3.9'
 
 services:
-  mongodb:
+  pg:
     image: postgres:16.2-alpine
     environment:
       POSTGRES_USER: "postgres"
