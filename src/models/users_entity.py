@@ -10,7 +10,7 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now)
     name = Column(String, nullable=True, default="")
     second_name = Column(String, nullable=True, default="")
     telephone = Column(String, unique=True, index=True)
@@ -19,6 +19,4 @@ class User(Base):
     password = Column(String)
 
     role = relationship("Role", back_populates="users")
-
     orders = relationship("Order", back_populates="user")
-    users = relationship("User", back_populates="role")

@@ -7,15 +7,13 @@ from ..common.database import Base
 
 
 class Order(Base):
-    __tablename__ = "orders"
+	__tablename__ = "orders"
 
-    id = Column(Integer, primary_key=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    name = Column(String, nullable=True, default="")
-    telephone = Column(String, unique=True, index=True)
-    cart_id = Column(Integer, ForeignKey("carts.id"))
-    user_id = Column(Integer, ForeignKey("users.id"))
+	id = Column(Integer, primary_key=True)
+	created_at = Column(DateTime, default=datetime.now())
 
-    cart = relationship("Cart", back_populates="cart")
+	products = Column(Integer)
+	user_id = Column(Integer, ForeignKey("users.id"))
 
-    user = relationship("User", back_populates="user")
+	user = relationship("User", back_populates="orders")
+	cart = relationship("Cart", uselist=False, back_populates="order")

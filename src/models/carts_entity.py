@@ -1,7 +1,8 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float
+from sqlalchemy import Column, ForeignKey, Integer, Float
 from sqlalchemy.orm import relationship
 
 from ..common.database import Base
+from ..models.orders_entity import Order
 
 
 class Cart(Base):
@@ -10,7 +11,6 @@ class Cart(Base):
     id = Column(Integer, primary_key=True)
     quantity = Column(Integer, default=0)
     price = Column(Float, default=0)
+    order_id = Column(Integer, ForeignKey(Order.id), unique=True)
 
-    order_id = Column(Integer, ForeignKey("order.id"))
-
-    order = relationship("Order", back_populates="carts")
+    order = relationship("Order", back_populates="cart")
